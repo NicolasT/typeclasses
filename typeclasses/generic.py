@@ -106,3 +106,28 @@ class Function(object):
             self._impls.sort(cmp=lambda (a, _1), (b, _2): _subclass_cmp(a, b))
         finally:
             self._lock.release()
+
+    def __rlshift__(self, other):
+        '''Infix-style operator setup function
+
+        This is based on the idea found at
+        http://code.activestate.com/recipes/384122-infix-operators/
+        '''
+
+        return _InfixHelper(lambda x: self(other, x))
+
+
+class _InfixHelper(object):
+    '''Helper type for infix style (<<fun>>) calculations'''
+
+    def __init__(self, fun):
+        '''Initialize a new helper instance
+
+        :param fun: Function to call
+        :type fun: `callable`
+        '''
+
+        self.fun = fun
+
+    def __rshift__(self, other):
+        return self.fun(other)
