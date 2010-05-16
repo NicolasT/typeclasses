@@ -20,6 +20,7 @@
 
 '''Some demonstrations of the Functor typeclass and its `fmap` function'''
 
+from typeclasses.eq import eq
 from typeclasses.functor import fmap
 
 # Make sure instances are registered
@@ -48,7 +49,7 @@ assert fmap(f, lambda i: i * 3)(1) == 4
 
 # fmap on Maybe = function application on Just, Nothing on Nothing
 assert fmap(f, Nothing) == Nothing
-assert fmap(f, Just(1)) == Just(2)
+assert eq(fmap(f, Just(1)), Just(2))
 
 # fmap on Tree = recursive fmap on branches, application on value in leafs
 # I.e., if the original is
@@ -65,8 +66,8 @@ assert fmap(f, Just(1)) == Just(2)
 #  /\
 # 3 4
 demo_tree = Branch(Branch(Leaf(2), Leaf(3)), Leaf(4))
-assert fmap(f, Leaf(1)) == Leaf(2)
-assert fmap(f, demo_tree) == Branch(Branch(Leaf(3), Leaf(4)), Leaf(5))
+assert eq(fmap(f, Leaf(1)), Leaf(2))
+assert eq(fmap(f, demo_tree), Branch(Branch(Leaf(3), Leaf(4)), Leaf(5)))
 
 
 # Functor laws
@@ -85,10 +86,10 @@ assert fmap_id(demo_tuple) == id_(demo_tuple)
 #    lambda x: id_(f(x))
 assert fmap_id(f)(1) == id_(f(1))
 # Maybe
-assert fmap_id(Nothing) == id_(Nothing)
-assert fmap_id(Just(1)) == id_(Just(1))
+assert eq(fmap_id(Nothing), id_(Nothing))
+assert eq(fmap_id(Just(1)), id_(Just(1)))
 # Tree
-assert fmap_id(demo_tree) == id_(demo_tree)
+assert eq(fmap_id(demo_tree), id_(demo_tree))
 
 # fmap (g . h) = fmap g . fmap h
 # ------------------------------
@@ -109,7 +110,7 @@ assert fmap_g_dot_h(demo_tuple) == fmap_g_dot_fmap_h(demo_tuple)
 # know...
 assert fmap_g_dot_h(f)(1) == fmap_g_dot_fmap_h(f)(1)
 # Maybe
-assert fmap_g_dot_h(Nothing) == fmap_g_dot_fmap_h(Nothing)
-assert fmap_g_dot_h(Just(1)) == fmap_g_dot_fmap_h(Just(1))
+assert eq(fmap_g_dot_h(Nothing), fmap_g_dot_fmap_h(Nothing))
+assert eq(fmap_g_dot_h(Just(1)), fmap_g_dot_fmap_h(Just(1)))
 # Tree
-assert fmap_g_dot_h(demo_tree) == fmap_g_dot_fmap_h(demo_tree)
+assert eq(fmap_g_dot_h(demo_tree), fmap_g_dot_fmap_h(demo_tree))
