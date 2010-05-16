@@ -28,6 +28,24 @@ from typeclasses.utils import map_
 TypeClass = lambda *funs: tuple(funs)
 
 
+def has_default(fun):
+    '''
+    Check whether a defined typeclass function has a default implementation
+    '''
+    try:
+        fun, default = fun
+    except (ValueError, TypeError):
+        pass
+    else:
+        return True
+
+    return False
+
+
+default = lambda (_, default_): default_
+fun = lambda (fun_, _): fun_
+
+
 def instance(typeclass, type_, *funs):
     '''Define an instance of a typeclass for a given type
 
@@ -41,5 +59,13 @@ def instance(typeclass, type_, *funs):
 
     assert len(funs) == len(typeclass)
 
-    map_(lambda (fun, impl): fun.register_impl(type_, impl),
-         izip(typeclass, funs))
+    for (typeclass_fun, impl) in izip(typeclass, funs):
+        if not impl and not has_default(typeclass_fun):
+            raise ValueError('No default implementation')
+
+        if not impl:
+            fun(typeclass_fun).register_impl(type_, default(typeclass_fun))
+        elif has_default(typeclass_fun):
+            fun(typeclass_fun).register_impl(type_, impl)
+        else:
+            typeclass_fun.register_impl(type_, impl)
