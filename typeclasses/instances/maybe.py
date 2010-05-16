@@ -22,6 +22,7 @@
 
 from typeclasses import instance
 from typeclasses.functor import Functor
+from typeclasses.eq import Eq
 
 class Maybe(object):
     pass
@@ -46,18 +47,13 @@ class Just(Maybe):
     def __repr__(self):
         return 'Just %r' % self.value
 
-    def __eq__(self, other):
-        if type(other) != Just:
-            return NotImplemented
-
-        return self.value == other.value
-
-    def __ne__(self, other):
-        if type(other) != Just:
-            return NotImplemented
-
-        return self.value != other.value
-
 
 instance(Functor, Maybe, lambda f, o: Just(f(o.value)) if o is not Nothing
          else Nothing)
+
+instance(Eq, Maybe,
+         lambda a, b: True if a is Nothing and b is Nothing else
+            False if a is Nothing or b is Nothing else
+            True if a.value == b.value else
+            False,
+         None)

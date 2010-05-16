@@ -21,6 +21,7 @@
 '''Definition and typeclass instance definitions of the 'Tree' type'''
 
 from typeclasses import instance
+from typeclasses.eq import Eq, eq
 from typeclasses.functor import Functor, fmap
 
 class Tree(object):
@@ -36,18 +37,6 @@ class Leaf(Tree):
     def __repr__(self):
         return 'Leaf %r' % self.value
 
-    def __eq__(self, other):
-        if type(other) != Leaf:
-            return NotImplemented
-
-        return self.value == other.value
-
-    def __ne__(self, other):
-        if type(other) != Leaf:
-            return NotImplemented
-
-        return self.value != other.value
-
 
 class Branch(Tree):
     def __init__(self, left, right):
@@ -60,18 +49,15 @@ class Branch(Tree):
     def __repr__(self):
         return 'Branch (%r) (%r)' % (self.left, self.right)
 
-    def __eq__(self, other):
-        if type(other) != Branch:
-            return NotImplemented
-
-        return self.left == other.left and self.right == other.right
-
-    def __ne__(self, other):
-        if type(other) != Branch:
-            return NotImplemented
-
-        return self.left != other.left and self.right != other.right
-
 
 instance(Functor, Tree, lambda f, o: Leaf(f(o.value)) if isinstance(o, Leaf)
          else Branch(fmap(f, o.left), fmap(f, o.right)))
+
+instance(Eq, Tree,
+         lambda a, b:
+             a.value == b.value if (
+                 isinstance(a, Leaf) and isinstance(b, Leaf))
+             else (eq(a.left, b.left) and eq(a.right, b.right)) if (
+                 isinstance(a, Branch) and isinstance(b, Branch))
+            else False,
+         None)

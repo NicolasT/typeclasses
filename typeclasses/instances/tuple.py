@@ -22,5 +22,8 @@
 
 from typeclasses import instance
 from typeclasses.functor import Functor
+from typeclasses.eq import Eq
 
 instance(Functor, tuple, lambda f, o: tuple(f(i) for i in o))
+
+instance(Eq, tuple, None, lambda a, b: a != b)

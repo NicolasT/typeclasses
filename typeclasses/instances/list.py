@@ -22,5 +22,8 @@
 
 from typeclasses import instance
 from typeclasses.functor import Functor
+from typeclasses.eq import Eq
 
 instance(Functor, list, map)
+
+instance(Eq, list, lambda a, b: a == b, None)
