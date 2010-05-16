@@ -73,6 +73,8 @@ assert eq(fmap(f, demo_tree), Branch(Branch(Leaf(3), Leaf(4)), Leaf(5)))
 # Using infix-style operators
 assert (lambda i: i * 2) <<fmap>> (lambda i: i + 1) <<fmap>> demo_list == \
     [2, 4, 6, 8]
+assert f <<fmap>> Just(1) <<eq>> Just(2)
+assert f <<fmap>> f <<fmap>> Nothing <<eq>> Nothing
 
 
 # Functor laws
