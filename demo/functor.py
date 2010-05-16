@@ -27,6 +27,7 @@ import typeclasses.instances.list
 import typeclasses.instances.tuple
 import typeclasses.instances.function
 from typeclasses.instances.maybe import Nothing, Just
+from typeclasses.instances.tree import Branch, Leaf
 
 # The function we'll map
 f = lambda i: i + 1
@@ -49,6 +50,24 @@ assert fmap(f, lambda i: i * 3)(1) == 4
 assert fmap(f, Nothing) == Nothing
 assert fmap(f, Just(1)) == Just(2)
 
+# fmap on Tree = recursive fmap on branches, application on value in leafs
+# I.e., if the original is
+#
+#    /\
+#   / 4
+#  /\
+# 2 3
+#
+# applying fmap f will yield
+#
+#    /\
+#   / 5
+#  /\
+# 3 4
+demo_tree = Branch(Branch(Leaf(2), Leaf(3)), Leaf(4))
+assert fmap(f, Leaf(1)) == Leaf(2)
+assert fmap(f, demo_tree) == Branch(Branch(Leaf(3), Leaf(4)), Leaf(5))
+
 
 # Functor laws
 # ============
@@ -68,6 +87,8 @@ assert fmap_id(f)(1) == id_(f(1))
 # Maybe
 assert fmap_id(Nothing) == id_(Nothing)
 assert fmap_id(Just(1)) == id_(Just(1))
+# Tree
+assert fmap_id(demo_tree) == id_(demo_tree)
 
 # fmap (g . h) = fmap g . fmap h
 # ------------------------------
@@ -90,3 +111,5 @@ assert fmap_g_dot_h(f)(1) == fmap_g_dot_fmap_h(f)(1)
 # Maybe
 assert fmap_g_dot_h(Nothing) == fmap_g_dot_fmap_h(Nothing)
 assert fmap_g_dot_h(Just(1)) == fmap_g_dot_fmap_h(Just(1))
+# Tree
+assert fmap_g_dot_h(demo_tree) == fmap_g_dot_fmap_h(demo_tree)
