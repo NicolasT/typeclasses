@@ -18,13 +18,28 @@
 # Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston,
 # MA  02110-1301  USA
 
-'''An educational Python implementation of Haskell-style typeclasses'''
+'''Typeclass definition and instance definition functions'''
 
-__author__ = 'Nicolas Trangez  <eikke eikke com>'
-__version__ = 0, 0, 1
-__license__ = 'LGPL-2.1'
+from itertools import izip
 
-__all__ = ['function', 'TypeClass', 'instance', ]
+from typeclasses.utils import map_
 
-from .generic import Function as function
-from .typeclass import TypeClass, instance
+# A typeclass is nothing but a tuple of generic functions
+TypeClass = lambda *funs: tuple(funs)
+
+
+def instance(typeclass, type_, *funs):
+    '''Define an instance of a typeclass for a given type
+
+    :param typeclass: Typeclass for which to define an instance
+    :type typeclass: `TypeClass`
+    :param type_: Type for which to define an instance
+    :type type_: `type`
+    :param funs: Typeclass function implementations
+    :type funs: `callable`
+    '''
+
+    assert len(funs) == len(typeclass)
+
+    map_(lambda (fun, impl): fun.register_impl(type_, impl),
+         izip(typeclass, funs))

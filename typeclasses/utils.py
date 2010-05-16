@@ -18,13 +18,18 @@
 # Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston,
 # MA  02110-1301  USA
 
-'''An educational Python implementation of Haskell-style typeclasses'''
+'''Some utility functions'''
 
-__author__ = 'Nicolas Trangez  <eikke eikke com>'
-__version__ = 0, 0, 1
-__license__ = 'LGPL-2.1'
+def map_(f, l):
+    '''Map a given function over some values, without any result
 
-__all__ = ['function', 'TypeClass', 'instance', ]
+    This is similar to `map`, but doesn't build nor return a list.
 
-from .generic import Function as function
-from .typeclass import TypeClass, instance
+    :param f: Function to map
+    :type f: `callable`
+    :param l: Collection over which to map
+    :type l: `iterable`
+    '''
+
+    for o in l:
+        f(o)
